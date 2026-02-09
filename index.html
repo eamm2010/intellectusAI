@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz AI - IntellectusPR</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <picture>
+        <source srcset="/static/logo_intellectus.avif" type="image/avif">
+        <img src="/static/logo_intellectus.png" alt="Intellectus PR" style="width:150px; margin-bottom:20px;">
+    </picture>
+    <h1>IntellectusPR AI Quiz Generator</h1>
+    <p>Generador de evaluaciones (Kinder - 12)</p>
+
+    <form id="quizForm">
+        <label>Grado:</label>
+        <select id="grado" name="grado" required>
+            <option value="">--Selecciona--</option>
+            <option>Kinder</option>
+            <option>1°</option><option>2°</option><option>3°</option>
+            <option>4°</option><option>5°</option><option>6°</option>
+            <option>7°</option><option>8°</option><option>9°</option>
+            <option>10°</option><option>11°</option><option>12°</option>
+        </select>
+
+        <label>Tema:</label>
+        <input type="text" id="tema" required>
+
+        <label>Cantidad:</label>
+        <input type="number" id="cantidad" min="1" max="30" required>
+
+
+        <label>Tipo de preguntas:</label>
+        <select id="tipo">
+            <option value="multiple">Opción múltiple</option>
+            <option value="vf">Verdadero / Falso</option>
+            <option value="abiertas">Preguntas abiertas</option>
+        </select>
+
+        
+        <label>Formato:</label>
+        <select id="formato">
+            <option value="kahoot">Kahoot (Excel)</option>
+            <option value="word">Prueba en papel (Word)</option>
+        </select>
+
+        <button type="submit">Generar</button>
+        <div id="warning" class="hidden warning">
+        ⚠️ En Excel/Kahoot solo está disponible Opción múltiple.
+        </div>
+
+    </form>
+
+    <div id="loading" class="hidden">⏳ Generando...</div>
+    <div id="resultado" class="hidden">
+        <a id="downloadLink" href="#">Descargar</a>
+    </div>
+    <div id="error" class="hidden">❌ Error al generar</div>
+</div>
+
+<script src="/static/script.js"></script>
+</body>
+</html>

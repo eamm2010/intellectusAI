@@ -1,0 +1,108 @@
+/* Reset básico */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #F4F6F8;
+    color: #333333;
+}
+
+/* Container */
+.container {
+    max-width: 600px;
+    margin: 50px auto;
+    background: #fff;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    text-align: center;
+}
+
+/* Titulos */
+h1 {
+    color: #003366;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+p {
+    color: #333333;
+    font-size: 16px;
+    margin-bottom: 25px;
+}
+
+/* Formulario */
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+input, select, button {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    width: 100%;
+}
+
+/* Botón principal */
+button {
+    background-color: #00A4CC;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: 600;
+}
+
+button:hover {
+    background-color: #007F99;
+}
+
+/* Estados */
+.hidden {
+    display: none;
+}
+
+/* Resultado descarga */
+#resultado a {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 12px 25px;
+    background-color: #003366;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+#resultado a:hover {
+    background-color: #001f33;
+}
+
+/* Error */
+#error p {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+/* Loading */
+#loading p {
+    color: #003366;
+    font-weight: 500;
+}
+
+.warning {
+  margin-top: 15px;
+  padding: 10px;
+  background: #ffe0e0;
+  color: #b00020;
+  border-radius: 8px;
+  font-weight: 500;
+  text-align: center;
+}
