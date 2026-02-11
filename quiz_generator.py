@@ -15,7 +15,7 @@ def generar_quiz(tema, grado, cantidad, tipo, formato):
 
 def generar_excel(tema, grado, cantidad):
     prompt = f"""
-Crea {cantidad} preguntas de opción múltiple para estudiantes de {grado}.
+Crea {cantidad} preguntas de opción múltiple para estudiantes de {grado} basate en los estandares del departamento de educacion en Puerto Rico.
 Tema: {tema}
 
 Devuelve SOLO JSON:
@@ -59,7 +59,7 @@ Devuelve SOLO JSON:
 
 def generar_word(tema, grado, cantidad, tipo):
     prompt = f"""
-Crea una prueba escrita para estudiantes de {grado}.
+Crea una prueba escrita para estudiantes de {grado} basate en los estandares del departamento de educacion en Puerto Rico.
 Tema: {tema}
 Cantidad de preguntas: {cantidad}
 Tipo de preguntas: {tipo}
@@ -84,3 +84,4 @@ Incluye:
     archivo = "prueba.docx"
     doc.save(archivo)
     return archivo
+
