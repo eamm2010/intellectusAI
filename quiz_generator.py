@@ -9,10 +9,15 @@ from docx.oxml.ns import qn
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def generar_quiz(tema, grado, cantidad, tipo, formato):
+    # Si es College Board, fuerza Word (aunque el front lo bloquee, doble seguridad)
+    if grado.strip().lower() == "college board" or tipo.strip().lower() == "college board":
+        return generar_word_collegeboard(tema, grado, cantidad)
+
     if formato == "kahoot":
         return generar_excel(tema, grado, cantidad)
     else:
         return generar_word(tema, grado, cantidad, tipo)
+
 
 
 def generar_excel(tema, grado, cantidad):
@@ -72,8 +77,17 @@ Crea una prueba escrita para estudiantes de {grado} basate en los estandares del
 Tema: {tema}
 Cantidad de preguntas: {cantidad}
 Tipo de preguntas: {tipo}
-Haz que la prueba se vea limpia(sin simbolos innecesarios)
-No eres un maestro, solo crearas la prueba, sin campos de fecha ni nada
+Formato limpio y académico (sin emojis, sin símbolos raros)
+No incluyas fecha, nombre del maestro, ni referencias externas
+
+REGLAS IMPORTANTES:
+1) Si el tema es de Inglés (English / Grammar / Reading / Writing / ...), escribe TODA la evaluación en INGLÉS.
+2) Si el tema es de Español (Español / Gramatica / Lectura / Escritura / ...), escribe TODA la evaluación en ESPAÑOL.
+3) Si el hay DOS o mas temas (ejemplo: "Fracciones y Pronouns" o "Fracciones, Pronouns, ..."):
+   - Divide la evaluación en 2 secciones por idioma.
+   - Sección 1 en ESPAÑOL (temas en español).
+   - Sección 2 en INGLÉS (temas en inglés).
+4) No mezcles idiomas dentro de una misma sección.
 
 Incluye:
 - Título
@@ -98,3 +112,46 @@ Incluye:
     archivo = "prueba.docx"
     doc.save(archivo)
     return archivo
+
+def generar_word_collegeboard(tema, grado, cantidad):
+    prompt = f"""
+Crea una evaluación estilo College Board.
+Tema(s): {tema}
+Cantidad total de preguntas: {cantidad}
+
+REGLAS IMPORTANTES:
+1) Si el tema es de Inglés (English / Grammar / Reading / Writing / ...), escribe TODA la evaluación en INGLÉS.
+2) Si el tema es de Español (Español / Gramatica / Lectura / Escritura / ...), escribe TODA la evaluación en ESPAÑOL.
+3) Si el hay DOS o mas temas (ejemplo: "Fracciones y Pronouns" o "Fracciones, Pronouns, ..."):
+   - Divide la evaluación en 2 secciones por idioma.
+   - Sección 1 en ESPAÑOL (temas en español).
+   - Sección 2 en INGLÉS (temas en inglés).
+4) No mezcles idiomas dentro de una misma sección.
+
+FORMATO ESTILO COLLEGE BOARD:
+- Formato limpio y académico (sin emojis, sin símbolos raros)
+- Incluye secciones (por ejemplo: Multiple Choice, Short Response, Free Response) según aplique al tema
+- En opción múltiple: 4 opciones (A-D)
+- En respuesta corta o ensayo: indica claramente qué debe incluir la respuesta
+- No incluyas fecha, nombre del maestro, ni referencias externas
+
+Devuelve SOLO el contenido de la prueba en texto, con preguntas numeradas y secciones claras.
+"""
+
+    response = client.responses.create(
+        model="gpt-4.1-mini",
+        input=prompt
+    )
+
+    texto = response.output_text.strip()
+    doc = Document()
+
+    for linea in texto.split("\n"):
+        p = doc.add_paragraph()
+        r = p.add_run(linea)
+        comic_sans(r, 12)
+
+    archivo = "prueba_collegeboard.docx"
+    doc.save(archivo)
+    return archivo
+
