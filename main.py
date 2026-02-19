@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Form, Request
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, Form, Request, HTTPException
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
-from quiz_generator import generar_quiz
 from fastapi.staticfiles import StaticFiles
+from quiz_generator import generar_quiz
+import os
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -21,13 +22,47 @@ def generar(
     tipo: str = Form(...),
     formato: str = Form(...)
 ):
-    archivo = generar_quiz(tema, grado, cantidad, tipo, formato)
+    # Normaliza
+    grado_norm = (grado or "").strip().lower()
+    tipo_norm = (tipo or "").strip().lower()
+    formato_norm = (formato or "").strip().lower()
 
-    if archivo:
-        return FileResponse(
-            archivo,
-            filename=archivo,
-            media_type="application/octet-stream"
+    # Reglas server-side (Kahoot solo multiple)
+    if formato_norm == "kahoot" and tipo_norm != "multiple":
+        return JSONResponse(
+            status_code=400,
+            content={"error": "En Excel/Kahoot solo está disponible Opción múltiple."}
         )
 
-    return {"error": "No se pudo generar el quiz"}
+    # Reglas server-side (College Board fuerza Word + tipo College Board)
+    if grado_norm == "college board":
+        formato_norm = "word"
+        tipo_norm = "college board"
+
+    # Validación cantidad
+    if cantidad < 1 or cantidad > 30:
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Cantidad debe estar entre 1 y 30."}
+        )
+
+    try:
+        archivo = generar_quiz(tema, grado, cantidad, tipo_norm, formato_norm)
+    except Exception as e:
+        # Log opcional
+        return JSONResponse(
+            status_code=500,
+            content={"error": f"Error generando el quiz: {str(e)}"}
+        )
+
+    if not archivo or not os.path.exists(archivo):
+        return JSONResponse(
+            status_code=500,
+            content={"error": "No se pudo generar el archivo."}
+        )
+
+    return FileResponse(
+        path=archivo,
+        filename=os.path.basename(archivo),
+        media_type="application/octet-stream"
+    )
