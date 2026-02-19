@@ -68,11 +68,12 @@ def comic_sans(run, size=12):
 
 def generar_word(tema, grado, cantidad, tipo):
     prompt = f"""
-Crea una prueba escrita para estudiantes de {grado} basate en los estandares del departamento de educacion en Puerto Rico.
+Crea una prueba escrita para estudiantes de {grado} basate en los estandares del departamento de educacion en Puerto Rico(no incluyas en la prueba que son de ahi).
 Tema: {tema}
 Cantidad de preguntas: {cantidad}
 Tipo de preguntas: {tipo}
 Haz que la prueba se vea limpia(sin simbolos innecesarios)
+No eres un maestro, solo crearas la prueba, sin campos de fecha ni nada
 
 Incluye:
 - Título
