@@ -3,6 +3,8 @@ from openai import OpenAI
 import pandas as pd
 import json
 from docx import Document
+from docx.shared import Pt
+from docx.oxml.ns import qn
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -32,7 +34,7 @@ Devuelve SOLO JSON:
 """
 
     response = client.responses.create(
-        model="gpt-4.1",
+        model="gpt-4.1-mini",
         input=prompt
     )
 
@@ -57,12 +59,20 @@ Devuelve SOLO JSON:
     return archivo
 
 
+def comic_sans(run, size=12):
+    run.font.name = "Comic Sans MS"
+    run._element.rPr.rFonts.set(qn("w:ascii"), "Comic Sans MS")
+    run._element.rPr.rFonts.set(qn("w:hAnsi"), "Comic Sans MS")
+    run._element.rPr.rFonts.set(qn("w:cs"), "Comic Sans MS")
+    run.font.size = Pt(size)
+
 def generar_word(tema, grado, cantidad, tipo):
     prompt = f"""
 Crea una prueba escrita para estudiantes de {grado} basate en los estandares del departamento de educacion en Puerto Rico.
 Tema: {tema}
 Cantidad de preguntas: {cantidad}
 Tipo de preguntas: {tipo}
+Haz que la prueba se vea limpia(sin simbolos innecesarios)
 
 Incluye:
 - Título
@@ -75,13 +85,15 @@ Incluye:
         input=prompt
     )
 
-    texto = response.output_text
+    texto = response.output_text.strip()
 
     doc = Document()
+
     for linea in texto.split("\n"):
-        doc.add_paragraph(linea)
+        p = doc.add_paragraph()
+        r = p.add_run(linea)
+        comic_sans(r, 12)
 
     archivo = "prueba.docx"
     doc.save(archivo)
     return archivo
-
